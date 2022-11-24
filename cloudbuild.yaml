@@ -1,0 +1,30 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  id: builder
+  entrypoint: bash
+  args:
+  - -exc
+  - |
+    pwd
+    df -h
+    docker build -f Dockerfile.builder -t builder:local .
+- name: 'builder:local'
+  id: build
+  entrypoint: bash
+  args:
+  - -exc
+  - |
+    touch a
+    chcon system_u:object_r:container_file_t:s0 a
+    ls -lZ a
+    ls -lZ /workspace/a
+    pwd
+    tar --selinux --xattrs --xattrs-include="*" -cf m.tar a
+- name: 'gcr.io/cloud-builders/docker'
+  id: test-1
+  entrypoint: bash
+  args:
+  - -exc
+  - |
+    DOCKER_BUILDKIT=1 docker build --progress=plain -t myimage:local .
+    docker run myimage:local ls -lZ /usr/bin/a
