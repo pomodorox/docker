@@ -1,0 +1,9 @@
+steps:
+- name: gcr.io/cloud-builders/gsutil
+  dir: /workspace/louhi_ws
+  entrypoint: bash
+  args:
+  - -c
+  - |
+    set -ex
+    gcloud container images delete gcr.io/baremetal-yfd/gcb-built@sha256:a64401a2254a8379034e1cbf52dca25862aa3e77995a0c896ff8f51bdbd48d7c
